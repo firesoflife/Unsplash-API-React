@@ -1,23 +1,29 @@
-import logo from './logo.svg';
+import React, { useState, useEffect } from 'react';
 import './App.css';
+import axios from 'axios';
+import Heading from './components/Heading';
+import UnsplashImage from './components/UnsplashImage';
+import Loader from './components/Loader';
 
 function App() {
+  const [images, setImages] = useState([]);
+
+  useEffect(() => {
+    const apiRoot = 'https://api.unsplash.com/';
+    const accessKey = process.env.REACT_APP_ACCESSKEY;
+
+    axios
+      .get(`${apiRoot}/photos/random?client_id=${accessKey}&count=25`)
+      .then((res) => setImages([...images, ...res.data]));
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className='App'>
+      <Heading />
+      <Loader />
+      {images.map((image) => (
+        <UnsplashImage url={image.urls.small} key={image.id} />
+      ))}
     </div>
   );
 }
